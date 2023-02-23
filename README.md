@@ -1,9 +1,9 @@
-# commercetools-plugin-api
+# Commercetools-plugin-api
 
 # Installing
 
-npm install
-npm start
+  1. npm install
+  2. npm start
 
 hit API via 
 Offer API: http://localhost:3000/superpayment/offer
