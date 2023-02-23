@@ -1,6 +1,7 @@
 # commercetools-plugin-api
 
-#installation
+# Installing
+
 npm install
 npm start
 
