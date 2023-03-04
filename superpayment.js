@@ -55,7 +55,7 @@ async function refundPayment(data) {
   const SP_API_KEY = process.env.SUPER_API_KEY;
 
   var config = {
-    method: "post",
+    method: "POST",
     url: SP_BASE_URL + "/refunds",
     headers: {
       "Content-Type": "application/json",
@@ -69,9 +69,8 @@ async function refundPayment(data) {
       return response.data;
     })
     .catch(function (error) {
-      console.log(error);
     });
-
+    console.log('Sumit', rsp);
   return await rsp;
 }
 

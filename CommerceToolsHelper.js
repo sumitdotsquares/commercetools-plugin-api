@@ -225,16 +225,20 @@ async function createCustomer(params, stripeCustId) {
   return await rsp.body.customer;
 }
 
-async function createPayment(paymentIntent, currency, centAmount) {
+async function createPayment(currency, centAmount) {
   if (!client) {
     client = await createCtClient();
   }
+  const timestamp = Date.now();
   let uri = requestBuilder.payments.build();
   let paymentBody = {
-    key: paymentIntent.id,
+    key: timestamp / 1000,
     paymentMethodInfo: {
-      paymentInterface: "Stripe",
-      method: paymentIntent.method,
+      paymentInterface: "Super Payments",
+      method: "Online",
+      name: {
+        en: "Open Banking",
+      },
     },
     amountPlanned: {
       currencyCode: currency.toUpperCase(),
@@ -253,10 +257,11 @@ async function createPayment(paymentIntent, currency, centAmount) {
   return await rsp.body;
 }
 
-async function createOrder(cart) {
+async function createOrder(cartId) {
   if (!client) {
     client = await createCtClient();
   }
+  let cart = await getCart(cartId);
   let uri = requestBuilder.orders.build();
   let orderBody = {
     cart: {
@@ -310,11 +315,12 @@ async function getPayment(paymentIntent) {
   return await rsp.body;
 }
 
-async function addPaymentToOrder(orderId, payment) {
+async function addPaymentToOrder(orderId, paymentId) {
   if (!client) {
     client = await createCtClient();
   }
   let order = await getOrder(orderId);
+  let payment = await getPayment(paymentId);
   let uri = requestBuilder.orders.byId(orderId).build();
   const rsp = await client.execute({
     uri: uri,

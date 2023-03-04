@@ -97,6 +97,46 @@ app.post("/customer", async (req, res) => {
   res.send(await commerceTools.createCustomer(payload));
 });
 
+/* ------ CREATE CUSTOMER ------ */
+app.post("/customer", async (req, res) => {
+  const payload = {
+    email: req.body.email,
+    name: req.body.name,
+    address: {
+      line1: req.body.address,
+      city: req.body.city,
+      country: req.body.country,
+    },
+  };
+  payload.cartId = req.body.cartId;
+  res.send(await commerceTools.createCustomer(payload));
+});
+
+/* ------ CREATE ORDER ------ */
+app.post("/order", async (req, res) => {
+  res.send(await commerceTools.createOrder(req.body.cartId));
+});
+
+/* ------ CREATE PAYMENT ------ */
+app.post("/create-super-payment", async (req, res) => {
+  let CURRENCY_SIGN = process.env.CURRENCY_SIGN;
+  res.send(await commerceTools.createPayment(CURRENCY_SIGN, req.body.amount));
+});
+
+/* ------ ADD PAYMENT TO ORDER ------ */
+app.post("/add-payment-to-order", async (req, res) => {
+  let orderId = req.body.orderId;
+  let paymentId = req.body.paymentId;
+  res.send(await commerceTools.addPaymentToOrder(orderId, paymentId));
+});
+
+/* ------ UPDATE ORDER ------ */
+app.post("/update-order-status", async (req, res) => {
+  let orderId = req.body.orderId;
+  let paymentStatus = req.body.paymentStatus;
+  res.send(await commerceTools.updateOrder(orderId, paymentStatus));
+});
+
 /* ------ CREATE SUPER PAYMENT OFFER ------ */
 app.post("/super-payment/get-offer", async (req, res) => {
   let post_data = {
@@ -148,18 +188,18 @@ app.post("/super-payment/get-offer-link", async (req, res) => {
 app.post("/super-payment/refunds", async (req, res) => {
 
   let post_data = {
-    transactionId: "27b2ae04-cb8e-4bcb-a976-d14a40518db1",
-    minorUnitAmount: 10000,
+    transactionId: "ad9f5bcf-3df8-4967-b50c-898f4053ccc7",
+    minorUnitAmount: 11637,
     currency: "GBP",
-    externalReference: "refund101",
-    test: true,
+    externalReference: "refund102",
+    test: true
   };
 
   if (req.body) post_data = { ...post_data, ...req.body };
 
   let results = await superPayment.refundPayment(post_data);
   res.send(results);
-  
+
 });
 
 app.listen(PORT, () => {
