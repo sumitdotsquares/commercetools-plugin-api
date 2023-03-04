@@ -1,4 +1,4 @@
-# e-Commerce example integrated with CommerceTools and Super Payment
+# CommerceTools and Super Payment Extension
 
 The application provides a basic e-commerce site integrated with CommerceTools and Super Payment. This is pulling a product catalog directly from Commercetools and taking advantage of Commercetools’s cart API when a user adds a new item to a cart.
 
