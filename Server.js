@@ -4,9 +4,10 @@ import path from "path";
 import { dirname } from "path";
 import cors from "cors";
 import dotenv from "dotenv";
+import https from "https";
 
 import commerceTools from "./CommerceToolsHelper.js";
-
+import superPayment from "./superpayment.js";
 
 const app = express();
 app.use(express.json());
@@ -19,7 +20,6 @@ app.use("/confirm", express.static(path.join(__dirname, "client/build")));
 app.use(cors());
 
 dotenv.config();
-
 
 const PORT = process.env.CT_PORT;
 const BASE_URL = process.env.CT_BASE_URL;
@@ -97,7 +97,71 @@ app.post("/customer", async (req, res) => {
   res.send(await commerceTools.createCustomer(payload));
 });
 
+/* ------ CREATE SUPER PAYMENT OFFER ------ */
+app.post("/super-payment/get-offer", async (req, res) => {
+  let post_data = {
+    minorUnitAmount: 10000,
+    cart: {
+      id: "cart101",
+      items: [
+        {
+          name: "Im a product",
+          quantity: 2,
+          minorUnitAmount: 10000,
+          url: "https://www.dev-site-2x6137.wixdev-sites.org/product-page/i-m-a-product-8",
+        },
+      ],
+    },
+    page: "Checkout",
+    output: "both",
+    test: true,
+  };
+  if (req.body) post_data = { ...post_data, ...req.body };
+
+  let results = await superPayment.getOffer(post_data);
+  res.send(results);
+});
+
+/* ------ CREATE SUPER PAYMENT LINK ------ */
+app.post("/super-payment/get-offer-link", async (req, res) => {
+  const SUPER_successUrl = process.env.SUPER_successUrl;
+  const SUPER_cancelUrl = process.env.SUPER_cancelUrl;
+  const SUPER_failureUrl = process.env.SUPER_failureUrl;
+
+  let post_data = {
+    cashbackOfferId: "1fed4780-233f-4bc4-8a00-e40d95caa3c6",
+    successUrl: SUPER_successUrl,
+    cancelUrl: SUPER_cancelUrl,
+    failureUrl: SUPER_failureUrl,
+    minorUnitAmount: 10000,
+    currency: "GBP",
+    externalReference: "order_id_123450",
+  };
+
+  if (req.body) post_data = { ...post_data, ...req.body };
+
+  let results = await superPayment.getPaymentLink(post_data);
+  res.send(results);
+});
+
+/* ------ REFUND SUPER PAYMENT ------ */
+app.post("/super-payment/refunds", async (req, res) => {
+
+  let post_data = {
+    transactionId: "27b2ae04-cb8e-4bcb-a976-d14a40518db1",
+    minorUnitAmount: 10000,
+    currency: "GBP",
+    externalReference: "refund101",
+    test: true,
+  };
+
+  if (req.body) post_data = { ...post_data, ...req.body };
+
+  let results = await superPayment.refundPayment(post_data);
+  res.send(results);
+  
+});
 
 app.listen(PORT, () => {
-  console.log(`Example app listening on PORT ${PORT}`)
+  console.log(`Server Started on on port: ${PORT}`);
 });
